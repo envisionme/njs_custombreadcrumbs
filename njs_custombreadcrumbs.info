@@ -1,0 +1,7 @@
+name = NJS - Custom Breadcrumbs
+description = Custom breadcrumb handling for Nojoshmo.com
+core = 6.x
+package = NoJoShmo - Custom Modules
+
+version = "6.x-1-dev"
+core = "6.x"

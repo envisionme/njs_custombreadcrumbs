@@ -1,0 +1,69 @@
+<?php
+function njs_custombreadcrumbs_preprocess_page(&$variables){
+  $breadcrumb = njs_custombreadcrumbs_custom_breadcrumb($variables);
+  if($breadcrumb){
+    $variables['breadcrumb'] = $breadcrumb;
+  }
+}
+
+
+function njs_custombreadcrumbs_custom_breadcrumb($variables){
+  global $theme;
+  //~ print_r($theme);
+  if ($theme != 'njs_01')
+    return;
+    
+  $breadcrumb = array();
+  $breadcrumb[] = l(t('Home'), NULL);
+  $user = user_load(get_uid_from_url());
+  
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+    $node = node_load(arg(1));
+  }
+  //~ profile pages
+  if (arg(0) == 'user' || $node->uid == $user->uid && arg(2) != 'add') {
+    $breadcrumb[] = theme('username', $user);
+  }
+  if ((arg(0) == 'user' && is_numeric(arg(1)) && arg(2) == 'retro-cv') || $node->type == 'resume')
+    $breadcrumb[] = l('Resume', 'user/'.$user->uid.'/retro-cv');
+  elseif ((arg(0) == 'user' && is_numeric(arg(1)) && arg(2) == 'images') || $node->type == 'showcase_image' || (arg(0) == 'node' && arg(1) == 'add' && arg(2) == 'showcase-image'))
+    $breadcrumb[] = l('Showcase - Images', 'user/'.$user->uid.'/images');
+  elseif ((arg(0) == 'user' && is_numeric(arg(1)) && arg(2) == 'video') || $node->type == 'showcase_video' || (arg(0) == 'node' && arg(1) == 'add' && arg(2) == 'showcase-video'))
+    $breadcrumb[] = l('Showcase - Video', 'user/'.$user->uid.'/video');
+  elseif ((arg(0) == 'user' && is_numeric(arg(1)) && arg(2) == 'slides') || $node->type == 'showcase_slide' || (arg(0) == 'node' && arg(1) == 'add' && arg(2) == 'showcase-slide'))
+    $breadcrumb[] = l('Showcase - Slides', 'user/'.$user->uid.'/slides');
+  elseif ((arg(0) == 'user' && is_numeric(arg(1)) && arg(2) == 'documents') || $node->type == 'showcase_document' || (arg(0) == 'node' && arg(1) == 'add' && arg(2) == 'showcase-document'))
+    $breadcrumb[] = l('Showcase - Documents', 'user/'.$user->uid.'/documents');
+  elseif ((arg(0) == 'user' && is_numeric(arg(1)) && arg(2) == 'audio') || $node->type == 'showcase_audio' || (arg(0) == 'node' && arg(1) == 'add' && arg(2) == 'showcase-audio'))
+    $breadcrumb[] = l('Showcase - Audio', 'user/'.$user->uid.'/audio');
+  elseif ((arg(0) == 'user' && is_numeric(arg(1)) && arg(2) == 'references') || $node->type == 'reference')
+    $breadcrumb[] = l('References', 'user/'.$user->uid.'/references');
+  
+  //~ wall pages
+  if (arg(0) == 'user' && is_numeric(arg(1)) && arg(2) == 'wall') {
+    $breadcrumb[] = l('Wall', 'user/'.$node->nid.'/wall');
+  }
+  
+  //~ node pages
+  if (arg(0) == 'node' && is_numeric(arg(1)) && arg(2) == null) {
+    $breadcrumb[] = l('View Item', 'node/'.$node->nid);
+  }
+  
+  //~ node edit pages
+  if (arg(0) == 'node' && is_numeric(arg(1)) && arg(2) == 'edit') {
+    if ($node->type == 'uprofile')
+      $breadcrumb[] = l('Edit Profile', 'node/'.$node->nid.'/edit');
+    else
+      $breadcrumb[] = l('Edit Item', 'node/'.$node->nid.'/edit');
+  }
+  
+  if(sizeof($breadcrumb) > 1){
+    //~ $breadcrumb[] = l(t('Home'), NULL);
+    //~ $breadcrumb = array_reverse($breadcrumb);
+    //~ menu_set_active_item('foobar');
+    $breadcrumb[sizeof($breadcrumb)-1] = strip_tags($breadcrumb[sizeof($breadcrumb)-1]);
+    return theme('breadcrumb', $breadcrumb);
+  } else
+    return;
+}
+?>
