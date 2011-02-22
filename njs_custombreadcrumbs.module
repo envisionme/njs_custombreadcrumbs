@@ -9,8 +9,8 @@ function njs_custombreadcrumbs_preprocess_page(&$variables){
 
 function njs_custombreadcrumbs_custom_breadcrumb($variables){
   global $theme;
-  //~ print_r($theme);
-  if ($theme != 'njs_01')
+	$theme_list = array('njs_01', 'njs_01_blue', 'njs_01_green', 'njs_01_orange', 'njs_01_red');
+  if (!in_array($theme, $theme_list))
     return;
     
   $breadcrumb = array();
@@ -21,10 +21,10 @@ function njs_custombreadcrumbs_custom_breadcrumb($variables){
     $node = node_load(arg(1));
   }
   //~ profile pages
-  if (arg(0) == 'user' || $node->uid == $user->uid && arg(2) != 'add') {
+  if ((arg(0) == 'user' || $node->uid == $user->uid && arg(2) != 'add') && $user->uid) {
     $breadcrumb[] = theme('username', $user);
   }
-  if ((arg(0) == 'user' && is_numeric(arg(1)) && arg(2) == 'retro-cv') || $node->type == 'resume')
+  if ((arg(0) == 'user' && is_numeric(arg(1)) && arg(2) == 'resume') || $node->type == 'resume')
     $breadcrumb[] = l('Resume', 'user/'.$user->uid.'/retro-cv');
   elseif ((arg(0) == 'user' && is_numeric(arg(1)) && arg(2) == 'images') || $node->type == 'showcase_image' || (arg(0) == 'node' && arg(1) == 'add' && arg(2) == 'showcase-image'))
     $breadcrumb[] = l('Showcase - Images', 'user/'.$user->uid.'/images');
@@ -57,13 +57,17 @@ function njs_custombreadcrumbs_custom_breadcrumb($variables){
       $breadcrumb[] = l('Edit Item', 'node/'.$node->nid.'/edit');
   }
   
+	// facebook import page
+	if (arg(0) == 'fbconnect' && arg(1) == 'invite' && arg(2) == 'friends') {
+		$destination = explode('/', $_REQUEST['destination']);
+		if ($destination[0] == 'user' && is_numeric($destination[1]) && $destination[2] == 'contacts')
+			$breadcrumb[] = theme('username', user_load($destination[1]));
+		$breadcrumb[] = 'Facebook friend import';
+	}
+	
   if(sizeof($breadcrumb) > 1){
-    //~ $breadcrumb[] = l(t('Home'), NULL);
-    //~ $breadcrumb = array_reverse($breadcrumb);
-    //~ menu_set_active_item('foobar');
     $breadcrumb[sizeof($breadcrumb)-1] = strip_tags($breadcrumb[sizeof($breadcrumb)-1]);
     return theme('breadcrumb', $breadcrumb);
   } else
     return;
 }
-?>
