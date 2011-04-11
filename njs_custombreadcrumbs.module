@@ -21,7 +21,7 @@ function njs_custombreadcrumbs_custom_breadcrumb($variables){
     $node = node_load(arg(1));
   }
   //~ profile pages
-  if ((arg(0) == 'user' || $node->uid == $user->uid && arg(2) != 'add') && $user->uid) {
+  if ((arg(0) == 'user' || ($node->uid == $user->uid && arg(2) != 'add') || arg(0) == 'stream') && $user->uid) {
     $breadcrumb[] = theme('username', $user);
   }
   if ((arg(0) == 'user' && is_numeric(arg(1)) && arg(2) == 'resume') || $node->type == 'resume')
@@ -42,6 +42,11 @@ function njs_custombreadcrumbs_custom_breadcrumb($variables){
   //~ wall pages
   if (arg(0) == 'user' && is_numeric(arg(1)) && arg(2) == 'wall') {
     $breadcrumb[] = l('Wall', 'user/'.$node->nid.'/wall');
+  }
+
+	//~ activity stream pages
+  if (arg(0) == 'stream' && is_numeric(arg(1))) {
+    $breadcrumb[] = 'Activity Stream';
   }
   
   //~ node pages
