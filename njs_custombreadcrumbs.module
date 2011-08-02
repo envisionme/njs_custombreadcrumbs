@@ -22,7 +22,7 @@ function njs_custombreadcrumbs_custom_breadcrumb($variables){
   }
   //~ profile pages
   if ((arg(0) == 'user' || ($node->uid == $user->uid && arg(2) != 'add') || arg(0) == 'stream') && $user->uid) {
-    $breadcrumb[] = theme('username', $user);
+    $breadcrumb[] = $user->realname;//theme('username', $user);
   }
   if ((arg(0) == 'user' && is_numeric(arg(1)) && arg(2) == 'resume') || $node->type == 'resume')
     $breadcrumb[] = l('Resume', 'user/'.$user->uid.'/retro-cv');
@@ -69,6 +69,21 @@ function njs_custombreadcrumbs_custom_breadcrumb($variables){
 			$breadcrumb[] = theme('username', user_load($destination[1]));
 		$breadcrumb[] = 'Facebook friend import';
 	}
+  
+  //~ recruiter
+  if (arg(0) == 'recruiter') {
+    switch(arg(1)) {
+      case 'job-specs':
+        $breadcrumb[] = 'Job Specifications';
+        break;
+      case 'upgrade':
+        $breadcrumb[] = 'Upgrade your account';
+        break;
+      case 'our-recruiters':
+        $breadcrumb[] = 'All Recruiters';
+        break;
+    }
+  }
 	
   if(sizeof($breadcrumb) > 1){
     $breadcrumb[sizeof($breadcrumb)-1] = strip_tags($breadcrumb[sizeof($breadcrumb)-1]);
